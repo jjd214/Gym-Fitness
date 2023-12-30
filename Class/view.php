@@ -615,6 +615,7 @@ class view extends Config
                     <th>#</th>
                     <th>Plan</th>
                     <th>Amount</th>
+                    <th>Duration</th>
                 </tr>
             </thead><tbody>";
 
@@ -624,6 +625,7 @@ class view extends Config
             echo "<td>$count</td>";
             echo "<td>{$plan['plan']}</td>";
             echo "<td>₱ {$plan['amount']}</td>";
+            echo "<td>{$plan['duration']}</td>";
             echo "</tr>";
             $count++;
         }
@@ -982,4 +984,102 @@ class view extends Config
         echo "</nav>";
         echo "</div>";
     }
+
+    public function viewMemberStatus() {
+        $con = $this->con();
+        $sql = "SELECT * FROM `tbl_members`";
+        $stmt = $con->prepare($sql);
+        $stmt->execute();
+    
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        $itemsPerPage = 10; // Set the number of items to display per page
+        $totalItems = count($data);
+        $totalPages = ceil($totalItems / $itemsPerPage);
+    
+        if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+            $currentPage = max(1, min($_GET['page'], $totalPages));
+        } else {
+            $currentPage = 1;
+        }
+    
+        $offset = ($currentPage - 1) * $itemsPerPage;
+        $data = array_slice($data, $offset, $itemsPerPage);
+    
+        echo "<div class='container text-center'>";
+        echo "<table class='table table-bordered table-hover data-table caption-top'>";
+        echo "<caption>List of Trainers</caption>";
+        echo "<thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Trainor</th>
+                    <th>Plan</th>
+                    <th>Registered Date</th>
+                    <th>Expiration</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead><tbody>";
+    
+        $count = 1;
+        foreach ($data as $member) {
+            echo "<tr>";
+    
+            // Check if the expiration date is near (e.g., within 7 days)
+            $expirationDate = strtotime($member['expiration_date']);
+            $currentDate = time();
+            $daysUntilExpiration = floor(($expirationDate - $currentDate) / (60 * 60 * 24));
+    
+            // Define thresholds for highlighting
+            $highlightThresholdNear = 7;
+            $highlightThresholdMid = 14;
+    
+            // Determine the status and apply a style
+            if ($daysUntilExpiration <= $highlightThresholdNear) {
+                $statusCircleColor = 'red'; // Near to expire (red)
+                $buttonEnabled = true;
+            } elseif ($daysUntilExpiration <= $highlightThresholdMid) {
+                $statusCircleColor = 'yellow'; // Mid to expire (yellow)
+                $buttonEnabled = true;
+            } else {
+                $statusCircleColor = 'green'; // Long to expire (green)
+                $buttonEnabled = false;
+            }
+    
+            echo "<td>$count</td>";
+            echo "<td>{$member['firstname']}, {$member['lastname']}</td>";
+            echo "<td>{$member['email']}</td>";
+            echo "<td>{$member['trainer']}</td>";
+            echo "<td>{$member['plan']}</td>";
+            echo "<td>{$member['date_added']}</td>";
+            echo "<td>{$member['expiration_date']}</td>";
+    
+            
+            echo "<td class='text-center'><div style='width: 20px; height: 20px; border-radius: 50%; background-color: $statusCircleColor; display: inline-block;'></div></td>";
+
+    
+            echo "<td>";
+    
+            // Add buttons based on expiration status
+            if ($buttonEnabled) {
+                // Extend button with Font Awesome icon
+                echo "<button class='btn btn-success btn-sm me-1'><i class='fas fa-clock'></i> Extend</button>";
+                // Delete button with Font Awesome icon
+                echo "<button class='btn btn-danger btn-sm'><i class='fas fa-trash'></i> Delete</button>";
+            } else {
+                // Disabled buttons with Font Awesome icons
+                echo "<button class='btn btn-success btn-sm me-1' disabled><i class='fas fa-clock'></i> Extend</button>";
+                echo "<button class='btn btn-danger btn-sm' disabled><i class='fas fa-trash'></i> Delete</button>";
+            }
+    
+            echo "</td>";
+            echo "</tr>";
+            $count++;
+        }
+    
+        // ... (remaining code remains unchanged)
+    }
+    
 }

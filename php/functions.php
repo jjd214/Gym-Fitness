@@ -233,4 +233,7 @@ function deleteTrainer()
   }
 }
 
-
+function viewMemberStatus() {
+  $view = new view();
+  $view->viewMemberStatus();
+}

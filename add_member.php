@@ -97,9 +97,13 @@ $plans = $view->getPlans();
                             <label for="plan">Plan</label>
                             <select name="plan" id="plan" class="form-select">
                                 <?php foreach ($plans as $plan) { ?>
-                                    <option><?php echo $plan['plan']; ?></option>
+                                    <option value="<?php echo $plan['duration']; ?>"><?php echo $plan['plan']; ?></option>
                                 <?php } ?>
                             </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="plan_duration">Plan Duration (months)</label>
+                            <input type="hidden" class="form-control" id="plan_duration" name="plan_duration" value="" required>
                         </div>
                         <div class="col-md-6">
                             <label for="trainer">Trainer</label>
@@ -114,10 +118,9 @@ $plans = $view->getPlans();
                         <i class="fas fa-user-plus"></i> Submit Member Details
                     </button>
                 </form>
-            </div>
+            </div>  
         </div>
     </div>
 </div>
 
 <?php include('partials/__footer.php'); ?>
-

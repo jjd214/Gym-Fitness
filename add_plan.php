@@ -13,11 +13,15 @@
             <div class="card-body">
                 <?php add_plan(); ?>
                 <form action="" method="post" class="row g-3">
-                    <div class="col-md-6">
-                        <label for="plan" class="form-label">Plan (Months)</label>
+                    <div class="col-md-4">
+                        <label for="plan" class="form-label">Plan (Name)</label>
                         <input type="text" class="form-control" id="plan" name="plan" required>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
+                        <label for="duration" class="form-label">Duration (Months)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" required>
+                    </div>
+                    <div class="col-md-4">
                         <label for="amount" class="form-label">Amount</label>
                         <input type="number" class="form-control" id="amount" name="amount" required>
                     </div>

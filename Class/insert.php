@@ -64,37 +64,47 @@ class insert extends Config
     }
 
     public function add_member() {
-
-      if(isset($_POST['submit'])) {
-
-          $firstname = $_POST['fname'];
-          $lastname = $_POST['lname'];
-          $middlename = $_POST['mname'];
-          $email = $_POST['email'];
-          $contactno = $_POST['contactno'];
-          $gender = $_POST['gender'];
-          $address = $_POST['address'];
-          $plan = $_POST['plan'];
-          $trainer = $_POST['trainer'];
-
-          $con = $this->con();
-          $stmt = $con->prepare("INSERT INTO `tbl_members` (`firstname`,`lastname`,`middlename`,`email`,`contactno`,`gender`,`address`,`plan`,`trainer`) VALUES (?,?,?,?,?,?,?,?,?)");
-          $stmt->execute([$firstname,$lastname,$middlename,$email,$contactno,$gender,$address,$plan,$trainer]);
-          $result = $stmt->rowCount();
-
-          if($result > 0) {
-              echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
-                      <strong>New Member Added</strong> 
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>';
-          } else {
-              echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                      <strong>New Member Added Error</strong> 
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                      </div>';
-          }
-      }
-  }
+        if (isset($_POST['submit'])) {
+            $firstname = $_POST['fname'];
+            $lastname = $_POST['lname'];
+            $middlename = $_POST['mname'];
+            $email = $_POST['email'];
+            $contactno = $_POST['contactno'];
+            $gender = $_POST['gender'];
+            $address = $_POST['address'];
+            $plan = $_POST['plan'];
+            $trainer = $_POST['trainer'];
+    
+            $con = $this->con();
+            $stmt = $con->prepare("INSERT INTO `tbl_members` (`firstname`,`lastname`,`middlename`,`email`,`contactno`,`gender`,`address`,`plan`,`trainer`, `date_added`) VALUES (?,?,?,?,?,?,?,?,?, NOW())");
+            $stmt->execute([$firstname, $lastname, $middlename, $email, $contactno, $gender, $address, $plan, $trainer]);
+            $result = $stmt->rowCount();
+    
+            if ($result > 0) {
+                // Get the plan duration from the form
+                $planDuration = $_POST['plan'];
+    
+                // Calculate expiration date based on plan duration
+                $registeredDateTime = date('Y-m-d H:i:s'); // Assuming date_added is the current date and time
+                $expirationDateTime = strtotime("+$planDuration months", strtotime($registeredDateTime));
+                $expirationDateTimeString = date('Y-m-d H:i:s', $expirationDateTime);
+    
+                // Update the member record with the expiration date and time
+                $updateStmt = $con->prepare("UPDATE `tbl_members` SET `expiration_date` = ? WHERE `email` = ?");
+                $updateStmt->execute([$expirationDateTimeString, $email]);
+    
+                echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                          <strong>New Member Added</strong> 
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>';
+            } else {
+                echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                          <strong>New Member Added Error</strong> 
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                          </div>';
+            }
+        }
+    }
 
   public function add_equipment() {
 
@@ -134,10 +144,11 @@ class insert extends Config
 
           $plan = $_POST['plan'];
           $amount = $_POST['amount'];
+          $duration = $_POST['duration'];
 
           $con = $this->con();
-          $stmt = $con->prepare("INSERT INTO `tbl_plans` (`plan`,`amount`) VALUES (?,?)");
-          $stmt->execute([$plan,$amount]);
+          $stmt = $con->prepare("INSERT INTO `tbl_plans` (`plan`,`amount`,`duration`) VALUES (?,?,?)");
+          $stmt->execute([$plan,$amount,$duration]);
           $result = $stmt->rowCount();
 
           if($result > 0) {

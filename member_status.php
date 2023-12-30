@@ -1,14 +1,9 @@
 <?php 
 require_once('php/init.php');
 
-$title = 'Manage Members';
-?>
+$title = 'Manage Trainers';
 
-<style>
-    body {
-        zoom: 100%;
-    }
-</style>
+?>
 
 <?php include('partials/__header.php'); ?>
 
@@ -22,8 +17,8 @@ $title = 'Manage Members';
 <?php include('partials/__sidebar.php'); ?>
 
 <div class="content">
-    <?php editMember(); ?>
-    <?php deleteMember(); ?>
-    <?php manageMembers(); ?>
+    <h1>Members status</h1>
+    <?php viewMemberStatus(); ?>
 </div>
+    
 <?php include('partials/__footer.php'); ?>
